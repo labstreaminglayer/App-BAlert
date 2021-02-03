@@ -67,9 +67,10 @@
     <addaction name="actionLoad_Configuration"/>
     <addaction name="actionSave_Configuration"/>
     <addaction name="separator"/>
-    <addaction name="actionQuit_2"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_Configuration">
@@ -84,14 +85,17 @@
   </action>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionQuit_2">
-   <property name="text">
-    <string>Quit</string>
-   </property>
-  </action>
+   <action name="actionAbout">
+     <property name="text">
+       <string>&amp;About</string>
+     </property>
+   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
