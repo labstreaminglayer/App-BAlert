@@ -10,9 +10,7 @@ The BAlert LSL Application is currently untested by should work with the B-Alert
   * Start the BAlert app. You should see a window like the following.
 > > ![balert.png](balert.png)
 
-  * Click the "Link" button. If all goes well you should now have a stream on your lab network that has name "BAlert Xn" (n can be 4, 10 or 24) and type "EEG".
-
-  * The filter setting can be saved in the config file for subsequent use via File / Save Configuration. It is also possible to make a desktop shortcut that appends to the shortcut's Target field the snippet `-c name_of_config.cfg`.
+  * Click the "Link" button. If all goes well you should now have a stream on your lab network that has name "BAlert" and type "EEG".
 
 
 # Build Instructions
@@ -33,4 +31,5 @@ The BAlert LSL Application is currently untested by should work with the B-Alert
     * ABMAthena_ROOT_DIR -- {path to ABM SDK}
     * Qt5_DIR -- {Path to Qt install, probably C:\Qt\5.15.2\msvc2019\lib\cmake\Qt5}
     * LSL_DIR -- {PATH to LSL binaries}
-8. 
+8. Build -> Install
+9. If the BAlert Athena SDK is not on the path then you'll have to copy the requisite dll files to the same directory as the LSLBalert.exe
