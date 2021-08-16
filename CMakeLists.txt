@@ -4,7 +4,7 @@ project(LSLBAlert
 	DESCRIPTION "Transmit data from Advanced Brain Monitoring BAlert device over labstreaminglayer"
 	HOMEPAGE_URL "https://github.com/labstreaminglayer/App-BAlert/"
 	LANGUAGES C CXX
-	VERSION 1.14.0)
+	VERSION 1.15.0)
 
 find_package(LSL REQUIRED
 	HINTS ${LSL_INSTALL_ROOT}
