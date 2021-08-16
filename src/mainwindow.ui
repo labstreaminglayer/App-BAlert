@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>188</width>
-    <height>103</height>
+    <width>193</width>
+    <height>140</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QCheckBox" name="useFilter">
-      <property name="text">
-       <string>Use Filter</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
@@ -56,8 +46,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>188</width>
-     <height>18</height>
+     <width>193</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -70,7 +60,6 @@
     <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_Configuration">
@@ -88,14 +77,14 @@
     <string>&amp;Quit</string>
    </property>
    <property name="shortcut">
-     <string>Ctrl+Q</string>
+    <string>Ctrl+Q</string>
    </property>
   </action>
-   <action name="actionAbout">
-     <property name="text">
-       <string>&amp;About</string>
-     </property>
-   </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
