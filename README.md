@@ -1,13 +1,15 @@
 # Overview
 
-The BAlert LSL Application is currently untested by should work with the B-Alert X4, X10 and X24 systems produced by Advanced Brain Monitoring (http://www.b-alert.com/).
+The BAlert LSL Application is currently untested by should work with the B-Alert X10 and X24 systems produced by Advanced Brain Monitoring (http://www.b-alert.com/).
 
-**This is under construction. The Usage instructions below are outdated. The Build Instructions are likely to change.""
+The old version of the source code (that targets the now defunct SDK) can be found under [tag 1.0](https://github.com/labstreaminglayer/App-BAlert/releases/tag/v1.0).
+
+Moving forward this app will use the Athena SDK. (This may or may not require the BAlert-Live application?).
 
 # Usage
   * Make sure that the device is turned on and properly connected.
 
-  * Start the BAlert app. You should see a window like the following.
+  * Start the LSLBAlert.exe application. You should see a window like the following.
 > > ![balert.png](balert.png)
 
   * Click the "Link" button. If all goes well you should now have a stream on your lab network that has name "BAlert" and type "EEG".
