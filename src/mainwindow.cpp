@@ -51,14 +51,14 @@ MainWindow::MainWindow(QWidget *parent, const char *config_file)
 
 void MainWindow::load_config(const QString &filename) {
 	QSettings settings(filename, QSettings::Format::IniFormat);
-	ui->useFilter->setCheckState(settings.value("BAlert/usefilter", true).toBool() ? Qt::Checked : Qt::Unchecked);
+	// ui->useFilter->setCheckState(settings.value("BAlert/usefilter", true).toBool() ? Qt::Checked : Qt::Unchecked);
 }
 
 //: Save function, same as above
 void MainWindow::save_config(const QString &filename) {
 	QSettings settings(filename, QSettings::Format::IniFormat);
 	settings.beginGroup("BAlert");
-	settings.setValue("usefilter", ui->useFilter->checkState() == Qt::Checked);
+	// settings.setValue("usefilter", ui->useFilter->checkState() == Qt::Checked);
 	settings.sync();
 }
 
@@ -73,23 +73,42 @@ void MainWindow::closeEvent(QCloseEvent *ev) {
 // background data reader thread
 void reader_thread_function(std::atomic<bool> &shutdown) {
 
-	_DEVICE_INFO *pInfo = GetDeviceInfo(NULL);
-	if (pInfo == NULL) { throw std::runtime_error("No device found. Is it plugged in?"); }
+	_DEVICE_INFO *devInfo = GetDeviceInfoKeepConnection(NULL);
+	if (devInfo == NULL) {
+		CloseCurrentConnection();
+		throw std::runtime_error("No device found. Is it plugged in?");
+	}
 
-	// TODO: Determine the device type from pInfo. Below is hard-coded to X24Standard.
-	int init_res = InitSession(ABM_DEVICE_X24Standard, ABM_SESSION_RAW, -1, 0);
+	QString device_name(devInfo->chDeviceName);
+	bool bFlexX24 = device_name.contains("X24t");
+	bool bFlexX10 = device_name.contains("X10t");
+	int device_id;
+	if (devInfo->nNumberOfChannel == 24) {
+		if (bFlexX24)
+			device_id = ABM_DEVICE_X24Flex_10_20;
+		else
+			device_id = ABM_DEVICE_X24Standard;
+	} else if (devInfo->nNumberOfChannel == 10) {
+		if (bFlexX10)
+			device_id = ABM_DEVICE_X10Flex_Standard;
+		else if (bFlexX24)
+			device_id = ABM_DEVICE_X24Flex_Reduced;
+		else
+			device_id = ABM_DEVICE_X10Standard;
+	}
+
+	int init_res = InitSessionForCurrentConnection(device_id, ABM_SESSION_RAW, -1, false);
 	if (init_res != INIT_SESSION_OK) {
 		throw std::runtime_error("Could not initialize ABM session.");
 	}
 
-	// TODO: What's better? pInfo->nNumberOfChannel or the following?
 	int nChannels, nDeconPacketChannelsNmb, nPSDPacketChannelsNmb,
 		nRawPSDPacketChannelNmb, nQualityPacketChannelNmb;
 	int pkt_chan_res = GetPacketChannelNmbInfo(nChannels, nDeconPacketChannelsNmb,
 		nPSDPacketChannelsNmb, nRawPSDPacketChannelNmb, nQualityPacketChannelNmb);
 
 	// create streaminfo
-	std::string modelname = std::string("BAlert");  // TOOD: Get device name from pInfo
+	std::string modelname = std::string("BAlert");  // TOOD: Get device name from devInfo
 	lsl::stream_info info(
 		modelname, "EEG", nChannels + 6, sRate, lsl::cf_float32, modelname + "_sdetsff");
 	// append some meta-data
@@ -105,16 +124,22 @@ void reader_thread_function(std::atomic<bool> &shutdown) {
 	chans_info.append_child("channel").append_child_value("label", "Sec");
 	chans_info.append_child("channel").append_child_value("label", "MilliSec");
 	// TODO: Handle channel names from other device types.
-	std::vector<std::string> chan_names = {"Fp1", "F7", "F8", "T4", "T6", "T5", "T3", "Fp2", "O1", "P3", "Pz", "F3", "Fz", "F4", "C4", "P4", "POz", "C3", "Cz", "O2", "EKG", "AUX1", "AUX2", "AUX3"};
+
+	_CHANNELMAP_INFO stChannelMapInfo;
+	int chan_map_res = GetChannelMapInfo(stChannelMapInfo);
+
+	// std::vector<std::string> chan_names = {"Fp1", "F7", "F8", "T4", "T6", "T5", "T3", "Fp2", "O1", "P3", "Pz", "F3", "Fz", "F4", "C4", "P4", "POz", "C3", "Cz", "O2", "EKG", "AUX1", "AUX2", "AUX3"};
 	for (size_t i = 0; i < nChannels; i++) {
-		chans_info.append_child("channel").append_child_value("label", chan_names[i]);
+		chans_info.append_child("channel").append_child_value(
+			"label", stChannelMapInfo.stEEGChannels.cChName[i]);
+		// chans_info.append_child("channel").append_child_value("label", chan_names[i]);
 	}
 
 	// make a new outlet
 	lsl::stream_outlet outlet(info);
 
 	// try to connect
-	int start_res = StartAcquisition();
+	int start_res = StartAcquisitionForCurrentConnection();
 	if (start_res != ACQ_STARTED_OK) {
 		throw std::runtime_error("Could not start ABM acquisition.");
 	}
@@ -130,7 +155,8 @@ void reader_thread_function(std::atomic<bool> &shutdown) {
 			}
 		}
 	}
-	StopAcquisition();
+	int stop_res = StopAcquisition();
+	if (stop_res != ACQ_STOPPED_OK) throw std::runtime_error("Failed to stop acquisition.");
 }
 
 // start/stop the BAlert connection
@@ -155,7 +181,7 @@ void MainWindow::link_balert() {
 		try {
 
 			// get the UI parameters...
-			bool usefilter = ui->useFilter->checkState()==Qt::Checked;
+			// bool usefilter = ui->useFilter->checkState()==Qt::Checked;
 
 			connected = true;
 
